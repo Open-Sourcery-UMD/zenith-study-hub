@@ -157,8 +157,6 @@ zenith-study-hub/
 ## Team
 
 - **Shreyas Thirumale** (Project Lead)
-- **Jimmy Zhang** (Contributor)
-- **Sameer Chawla** (Contributor)
 - **Yidong Guo** (Contributor)
 - **Angela Wu** (Contributor)
 
