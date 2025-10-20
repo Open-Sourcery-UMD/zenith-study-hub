@@ -4,8 +4,8 @@
   "description": "Backend API for Zenith Study Hub",
   "main": "src/server.js",
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js",
+    "dev": "nodemon src/server-simple.js",
+    "start": "node src/server-simple.js",
     "test": "jest",
     "lint": "eslint src/",
     "migrate": "knex migrate:latest",
