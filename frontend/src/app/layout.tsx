@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Zenith Study Hub',
-  description: 'Your all-in-one student productivity suite',
+  description: 'The all-in-one student productivity suite',
 }
 
 export default function RootLayout({
