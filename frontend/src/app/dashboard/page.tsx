@@ -134,15 +134,15 @@ export default function DashboardPage() {
                             <CardDescription>Get started with common tasks</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                            <Button className="w-full justify-start hover-lift group" onClick={() => router.push('/syllabus/upload')}>
-                                <Plus className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform duration-200" />
-                                Upload Syllabus
+                            <Button className="w-full justify-start hover-lift group" onClick={() => router.push('/calendar')}>
+                                <Calendar className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                                View Calendar
                             </Button>
-                            <Button variant="outline" className="w-full justify-start hover-lift group" onClick={() => router.push('/projects/new')}>
-                                <Plus className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform duration-200" />
-                                Create Project
+                            <Button variant="outline" className="w-full justify-start hover-lift group" onClick={() => router.push('/projects')}>
+                                <Users className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                                View Projects
                             </Button>
-                            <Button variant="outline" className="w-full justify-start hover-lift group" onClick={() => router.push('/focus/start')}>
+                            <Button variant="outline" className="w-full justify-start hover-lift group" onClick={() => router.push('/focus')}>
                                 <Focus className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
                                 Start Focus Session
                             </Button>

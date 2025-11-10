@@ -59,25 +59,25 @@ export default function HomePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 dark:from-background dark:via-background dark:to-accent/10">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 dark:from-background dark:via-background dark:to-accent/10 overflow-hidden">
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16 animate-swipe-up">
+        <div className="text-center mb-16">
           <div className="inline-flex items-center px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-6 animate-fade-in animate-stagger-1">
             <Star className="h-4 w-4 mr-2" />
             Trusted by 10,000+ students
           </div>
           
-          <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-primary to-purple-600 dark:from-primary dark:via-blue-400 dark:to-purple-400 bg-clip-text text-transparent animate-slide-up animate-stagger-2">
+          <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-primary to-purple-600 dark:from-primary dark:via-blue-400 dark:to-purple-400 bg-clip-text text-transparent animate-swipe-up animate-stagger-2">
             Zenith Study Hub
           </h1>
           
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed animate-slide-up animate-stagger-3">
+          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed animate-swipe-up animate-stagger-3">
             Transform your academic journey with the ultimate student productivity suite. 
             Organize, collaborate, and excel like never before.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up animate-stagger-4">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-swipe-up animate-stagger-4">
             <Button 
               size="lg" 
               className="text-lg px-8 py-4 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 hover-lift shadow-lg group"
@@ -101,8 +101,8 @@ export default function HomePage() {
             {benefits.map((benefit, index) => (
               <div 
                 key={index}
-                className={`flex items-center justify-center text-sm text-muted-foreground animate-fade-in`}
-                style={{ animationDelay: `${0.6 + (index * 0.1)}s` }}
+                className="flex items-center justify-center text-sm text-muted-foreground animate-fade-in"
+                style={{ animationDelay: `${0.75 + (index * 0.1)}s` }}
               >
                 <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
                 <span>{benefit}</span>
@@ -118,8 +118,8 @@ export default function HomePage() {
             return (
               <Card 
                 key={index}
-                className={`group modern-card hover-lift border-0 animate-slide-up`}
-                style={{ animationDelay: `${0.8 + (index * 0.1)}s` }}
+                className="group modern-card hover-lift border-0 animate-scale-in"
+                style={{ animationDelay: `${1.15 + (index * 0.1)}s` }}
               >
                 <CardHeader className="text-center">
                   <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary/10 to-purple-600/10 dark:from-primary/20 dark:to-purple-600/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-all duration-200">
@@ -140,7 +140,7 @@ export default function HomePage() {
         </div>
 
         {/* CTA Section */}
-        <div className={`text-center glass dark:glass-dark rounded-3xl p-12 shadow-xl animate-swipe-up`} style={{ animationDelay: '1.2s' }}>
+        <div className="text-center glass dark:glass-dark rounded-3xl p-12 shadow-xl animate-swipe-up" style={{ animationDelay: '1.55s' }}>
           <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
             Ready to Transform Your Studies?
           </h2>
