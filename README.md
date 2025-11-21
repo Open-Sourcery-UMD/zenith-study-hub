@@ -1,173 +1,270 @@
-# Zenith Study Hub
+# 🎓 Zenith Study Hub
 
-An all-in-one web application that acts as the central command center for a student's academic life.
+A comprehensive student productivity platform for managing academic life, featuring calendar management, project tracking, focus sessions, and course organization.
 
-## Features
+![Status](https://img.shields.io/badge/status-ready%20for%20deployment-brightgreen)
+![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-### 🗓️ Smart Calendar
-- Upload syllabi and automatically populate calendar with due dates, exams, and reading assignments
-- Intelligent syllabus parsing using PDF text extraction
-- Course-based organization and color coding
+---
 
-### 👥 Collaborative Project Management
-- Create and manage group projects like a simplified Trello/Asana
-- Task assignment and tracking
-- File sharing and team communication
-- Project status tracking and deadlines
+## ✨ Features
 
-### 🎯 Focus Mode
-- Integrated calendar-based focus sessions
-- Website blocking for distraction-free studying
-- Study time tracking for specific courses or assignments
-- Productivity analytics and insights
+### 📅 Smart Calendar
+- Create and manage academic events (assignments, exams, readings)
+- Color-coded by course
+- Date range filtering
+- Quick event creation
 
 ### 📚 Course Management
-- Organize all courses, assignments, and study materials
-- Centralized dashboard for academic overview
-- Progress tracking and completion status
+- Add and organize courses
+- Custom color coding
+- Course-specific tracking
 
-## Tech Stack
+### 📋 Project Tracker
+- Track group projects and assignments
+- Progress monitoring
+- Due date management
+- Status tracking (active, completed, archived)
 
-- **Frontend**: React/Next.js with TypeScript
-- **Backend**: Node.js/Express
-- **Database**: PostgreSQL
-- **Styling**: Tailwind CSS
-- **Authentication**: JWT
-- **File Upload**: Multer
-- **PDF Processing**: pdf-parse
-- **Deployment**: Docker & Docker Compose
+### 🎯 Focus Mode
+- Pomodoro-style focus sessions
+- Track study time by course
+- Session history and statistics
+- Productivity analytics
 
-## Getting Started
+### 📄 Syllabus Parser (Coming Soon)
+- Upload PDF syllabi
+- Automatic event extraction
+- Bulk calendar import
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL 15+
-- Docker & Docker Compose (optional)
+- Node.js 18+ 
+- npm or yarn
 
 ### Installation
 
-1. Clone the repository:
 ```bash
-git clone <repository-url>
+# Clone the repository
+git clone https://github.com/yourusername/zenith-study-hub.git
 cd zenith-study-hub
-```
 
-2. Install dependencies:
-```bash
-# Backend
+# Install backend dependencies
 cd backend
 npm install
 
-# Frontend
+# Install frontend dependencies
 cd ../frontend
 npm install
 ```
 
-3. Set up environment variables:
-```bash
-# Backend
-cp backend/.env.example backend/.env
-# Edit backend/.env with your database credentials
-```
+### Running Locally
 
-4. Set up the database:
+**Backend (Terminal 1):**
 ```bash
-# Create PostgreSQL database
-createdb zenith_study_hub
-
-# Run migrations
-cd backend
-npm run migrate
-```
-
-5. Start the development servers:
-```bash
-# Backend (Terminal 1)
 cd backend
 npm run dev
+```
+Server will start on http://localhost:3333 (or next available port)
 
-# Frontend (Terminal 2)
+**Frontend (Terminal 2):**
+```bash
 cd frontend
 npm run dev
 ```
+App will open at http://localhost:3000
 
-### Using Docker
+---
 
-1. Start all services:
-```bash
-docker-compose up -d
-```
-
-2. Access the application:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:5000
-- Database: localhost:5432
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 zenith-study-hub/
-├── backend/
+├── backend/                    # Express.js API server
 │   ├── src/
-│   │   ├── config/
-│   │   ├── middleware/
-│   │   ├── routes/
-│   │   └── server.js
+│   │   ├── server-simple.js   # Mock server (no database)
+│   │   ├── server.js          # Production server (with database)
+│   │   ├── routes/            # API route handlers
+│   │   ├── middleware/        # Auth & validation
+│   │   └── config/            # Database configuration
 │   ├── package.json
-│   └── Dockerfile
-├── frontend/
+│   └── README.md
+│
+├── frontend/                   # Next.js 14 application
 │   ├── src/
-│   │   ├── app/
-│   │   ├── components/
-│   │   ├── lib/
-│   │   └── store/
+│   │   ├── app/               # App router pages
+│   │   ├── components/        # React components
+│   │   ├── lib/               # Utilities & API client
+│   │   └── hooks/             # Custom React hooks
 │   ├── package.json
-│   └── Dockerfile
-├── database/
-│   └── migrations/
-├── docker-compose.yml
-└── README.md
+│   └── tailwind.config.js
+│
+├── DEPLOYMENT.md              # Deployment guide
+└── README.md                  # This file
 ```
 
-## API Endpoints
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Utility-first CSS
+- **Shadcn/ui** - Component library
+- **Lucide React** - Icons
+- **date-fns** - Date manipulation
+
+### Backend
+- **Express.js** - Web framework
+- **Node.js** - Runtime
+- **JWT** - Authentication
+- **bcrypt** - Password hashing
+- **Knex.js** - SQL query builder (production)
+- **PostgreSQL** - Database (production)
+
+### Development
+- **Mock Mode** - No database required for development
+- **Hot Reload** - Instant updates during development
+- **ESLint** - Code linting
+- **Jest** - Testing framework
+
+---
+
+## 🎯 API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
 
 ### Calendar
-- `GET /api/calendar` - Get calendar events
-- `POST /api/calendar` - Create calendar event
-- `PUT /api/calendar/:id` - Update calendar event
-- `DELETE /api/calendar/:id` - Delete calendar event
+- `GET /api/calendar` - Get all events
+- `POST /api/calendar` - Create event
+- `PUT /api/calendar/:id` - Update event
+- `DELETE /api/calendar/:id` - Delete event
+
+### Courses
+- `GET /api/courses` - Get all courses
+- `POST /api/courses` - Create course
+- `PUT /api/courses/:id` - Update course
+- `DELETE /api/courses/:id` - Delete course
 
 ### Projects
-- `GET /api/projects` - Get user projects
+- `GET /api/projects` - Get all projects
 - `POST /api/projects` - Create project
+- `PUT /api/projects/:id` - Update project
+- `DELETE /api/projects/:id` - Delete project
 
 ### Focus Sessions
-- `POST /api/focus/start` - Start focus session
-- `POST /api/focus/:id/end` - End focus session
-- `GET /api/focus/sessions` - Get focus sessions
+- `GET /api/focus/sessions` - Get session history
+- `POST /api/focus/start` - Start session
+- `POST /api/focus/:id/end` - End session
+- `GET /api/focus/stats` - Get statistics
 
-### Syllabus
-- `POST /api/syllabus/parse` - Parse syllabus PDF
-- `POST /api/syllabus/create-events` - Create events from syllabus
+See [backend/README.md](backend/README.md) for detailed API documentation.
 
-## Team
+---
 
-- **Shreyas Thirumale** (Project Lead)
-- **Yidong Guo** (Contributor)
-- **Angela Wu** (Contributor)
+## 🚢 Deployment
 
-## Contributing
+### Quick Deploy
+
+**Backend to Render:**
+1. Push to GitHub
+2. Connect repository on [render.com](https://render.com)
+3. Deploy as Web Service
+4. Copy API URL
+
+**Frontend to Vercel:**
+1. Update API URL in `frontend/src/lib/api.ts`
+2. Push to GitHub
+3. Import project on [vercel.com](https://vercel.com)
+4. Add environment variable: `NEXT_PUBLIC_API_URL`
+5. Deploy
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for complete deployment guide.
+
+---
+
+## 🧪 Testing
+
+```bash
+# Backend tests
+cd backend
+npm test
+
+# Frontend tests (if configured)
+cd frontend
+npm test
+```
+
+---
+
+## 🔒 Security Features
+
+- JWT-based authentication
+- Password hashing with bcrypt (12 rounds)
+- Helmet.js security headers
+- CORS configuration
+- Input validation
+- User data isolation
+- SQL injection prevention
+
+---
+
+## 📝 Environment Variables
+
+### Backend (.env)
+```bash
+PORT=5000
+NODE_ENV=development
+JWT_SECRET=your-secret-key
+JWT_EXPIRES_IN=7d
+```
+
+### Frontend (.env.local)
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:3333/api
+```
+
+---
+
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## License
+---
+
+## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Icons from [Lucide](https://lucide.dev/)
+
+---
+
+## 📧 Contact
+
+For questions or support, please open an issue on GitHub.
+
+---
+
+## 🎉 Ready to Deploy!
+
+Your Zenith Study Hub is ready for deployment. Follow the [DEPLOYMENT.md](DEPLOYMENT.md) guide to get it live!
+
+**Happy Studying! 📚✨**

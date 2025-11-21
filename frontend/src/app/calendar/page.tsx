@@ -1,8 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuthStore } from '@/store/authStore'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,8 +8,9 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Calendar, ArrowLeft, Plus, Trash2, Edit } from 'lucide-react'
+import { Calendar, Plus, Trash2 } from 'lucide-react'
 import { CalendarView } from '@/components/calendar-view'
+import { Navbar } from '@/components/navbar'
 import { api } from '@/lib/api'
 import { toast } from 'react-hot-toast'
 
@@ -26,8 +25,6 @@ interface CalendarEvent {
 }
 
 export default function CalendarPage() {
-  const router = useRouter()
-  const { isAuthenticated } = useAuthStore()
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState<Date | undefined>()
@@ -41,12 +38,8 @@ export default function CalendarPage() {
   })
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/auth/login')
-      return
-    }
     loadEvents()
-  }, [isAuthenticated, router])
+  }, [])
 
   const loadEvents = async () => {
     try {
@@ -61,9 +54,6 @@ export default function CalendarPage() {
 
   const handleDateClick = (date: Date) => {
     setSelectedDate(date)
-    const dateStr = date.toISOString().split('T')[0]
-    setFormData(prev => ({ ...prev, date: dateStr }))
-    setIsDialogOpen(true)
   }
 
   const handleAddEvent = async (e: React.FormEvent) => {
@@ -75,7 +65,9 @@ export default function CalendarPage() {
     }
 
     try {
+      console.log('Creating event:', formData)
       const response = await api.post('/calendar', formData)
+      console.log('Event created:', response.data)
       setEvents([...events, response.data])
       toast.success('Event added successfully!')
       setIsDialogOpen(false)
@@ -86,18 +78,24 @@ export default function CalendarPage() {
         time: '',
         type: 'assignment'
       })
-    } catch (error) {
-      toast.error('Failed to add event')
+    } catch (error: any) {
+      console.error('Error creating event:', error)
+      console.error('Error response:', error.response?.data)
+      toast.error(error.response?.data?.error || 'Failed to add event')
     }
   }
 
   const handleDeleteEvent = async (id: number) => {
     try {
+      console.log('Deleting event:', id)
       await api.delete(`/calendar/${id}`)
+      console.log('Event deleted successfully')
       setEvents(events.filter(e => e.id !== id))
       toast.success('Event deleted successfully!')
-    } catch (error) {
-      toast.error('Failed to delete event')
+    } catch (error: any) {
+      console.error('Error deleting event:', error)
+      console.error('Error response:', error.response?.data)
+      toast.error(error.response?.data?.error || 'Failed to delete event')
     }
   }
 
@@ -120,42 +118,25 @@ export default function CalendarPage() {
     }
   }
 
-  if (!isAuthenticated) {
-    return null
-  }
-
   const selectedDateEvents = getEventsForSelectedDate()
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card/50 backdrop-blur-sm shadow-sm border-b border-border/50 animate-slide-down">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center animate-slide-right">
-              <Button
-                variant="ghost"
-                onClick={() => router.push('/dashboard')}
-                className="mr-4 hover-lift"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold flex items-center bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-                  <Calendar className="h-6 w-6 mr-2 text-primary" />
-                  Calendar
-                </h1>
-                <p className="text-muted-foreground">Manage your assignments and events</p>
-              </div>
-            </div>
-            <Button className="hover-lift animate-slide-left" onClick={() => setIsDialogOpen(true)}>
+      <Navbar title="Calendar" />
+      
+      {/* Action Bar */}
+      <div className="bg-card/30 border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex justify-between items-center">
+            <p className="text-muted-foreground">Manage your assignments and events</p>
+            <Button className="hover-lift" onClick={() => setIsDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Add Event
             </Button>
           </div>
         </div>
-      </header>
+      </div>
+
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -172,7 +153,7 @@ export default function CalendarPage() {
                   <CalendarView
                     events={events}
                     onDateClick={handleDateClick}
-                    selectedDate={selectedDate}
+                    {...(selectedDate && { selectedDate })}
                   />
                 </CardContent>
               </Card>

@@ -63,7 +63,7 @@ module.exports = {
         },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: 0 },
+          to: { height: 4 },
         },
       },
       animation: {

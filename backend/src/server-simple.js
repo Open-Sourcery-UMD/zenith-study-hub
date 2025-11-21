@@ -6,16 +6,18 @@ const http = require('http');
 
 const app = express();
 
-// In-memory data store
+// In-memory data store - all start empty
 let users = [];
 let calendar_events = [];
 let projects = [];
 let focus_sessions = [];
-let courses = [
-  { id: 1, name: 'Mathematics', code: 'MATH101', color: '#3B82F6' },
-  { id: 2, name: 'Physics', code: 'PHYS201', color: '#EF4444' },
-  { id: 3, name: 'Computer Science', code: 'CS301', color: '#10B981' }
-];
+let courses = [];
+
+// ID counters
+let nextEventId = 1;
+let nextProjectId = 1;
+let nextSessionId = 1;
+let nextCourseId = 1;
 
 // Middleware
 app.use(helmet());
@@ -84,39 +86,18 @@ app.post('/api/auth/register', (req, res) => {
 
 // Calendar routes
 app.get('/api/calendar', authMiddleware, (req, res) => {
-  const mockEvents = [
-    {
-      id: 1,
-      title: 'Math Assignment Due',
-      description: 'Complete calculus problem set',
-      date: '2024-11-15',
-      time: '23:59',
-      type: 'assignment',
-      course_id: 1,
-      user_id: 1
-    },
-    {
-      id: 2,
-      title: 'Physics Exam',
-      description: 'Midterm exam covering chapters 1-5',
-      date: '2024-11-20',
-      time: '14:00',
-      type: 'exam',
-      course_id: 2,
-      user_id: 1
-    },
-    {
-      id: 3,
-      title: 'CS Project Demo',
-      description: 'Present final project to class',
-      date: '2024-11-25',
-      time: '10:00',
-      type: 'presentation',
-      course_id: 3,
-      user_id: 1
-    }
-  ];
-  res.json(mockEvents);
+  const { start, end } = req.query;
+  let events = calendar_events.filter(e => e.user_id === req.userId);
+  
+  // Filter by date range if provided
+  if (start && end) {
+    events = events.filter(e => e.date >= start && e.date <= end);
+  }
+  
+  // Sort by date
+  events.sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  res.json(events);
 });
 
 app.post('/api/calendar', authMiddleware, (req, res) => {
@@ -127,19 +108,55 @@ app.post('/api/calendar', authMiddleware, (req, res) => {
   }
 
   const newEvent = {
-    id: calendar_events.length + 1,
+    id: nextEventId++,
     title,
-    description,
+    description: description || '',
     date,
-    time,
+    time: time || null,
     type,
-    course_id,
+    course_id: course_id || null,
     user_id: req.userId,
     created_at: new Date().toISOString()
   };
 
   calendar_events.push(newEvent);
   res.status(201).json(newEvent);
+});
+
+app.put('/api/calendar/:id', authMiddleware, (req, res) => {
+  const eventId = parseInt(req.params.id);
+  const eventIndex = calendar_events.findIndex(e => e.id === eventId && e.user_id === req.userId);
+  
+  if (eventIndex === -1) {
+    return res.status(404).json({ error: 'Event not found' });
+  }
+
+  const { title, description, date, time, type, course_id } = req.body;
+  
+  calendar_events[eventIndex] = {
+    ...calendar_events[eventIndex],
+    title: title || calendar_events[eventIndex].title,
+    description: description !== undefined ? description : calendar_events[eventIndex].description,
+    date: date || calendar_events[eventIndex].date,
+    time: time !== undefined ? time : calendar_events[eventIndex].time,
+    type: type || calendar_events[eventIndex].type,
+    course_id: course_id !== undefined ? course_id : calendar_events[eventIndex].course_id,
+    updated_at: new Date().toISOString()
+  };
+
+  res.json(calendar_events[eventIndex]);
+});
+
+app.delete('/api/calendar/:id', authMiddleware, (req, res) => {
+  const eventId = parseInt(req.params.id);
+  const eventIndex = calendar_events.findIndex(e => e.id === eventId && e.user_id === req.userId);
+  
+  if (eventIndex === -1) {
+    return res.status(404).json({ error: 'Event not found' });
+  }
+
+  calendar_events.splice(eventIndex, 1);
+  res.json({ message: 'Event deleted successfully' });
 });
 
 // Error handling
@@ -182,31 +199,18 @@ findAvailablePort().then(port => {
 
 // Projects routes
 app.get('/api/projects', authMiddleware, (req, res) => {
-  const mockProjects = [
-    {
-      id: 1,
-      name: 'Web Development Portfolio',
-      description: 'Build a personal portfolio website using React',
-      course_id: 3,
-      course_name: 'Computer Science',
-      due_date: '2024-12-01',
-      status: 'active',
-      progress: 65,
-      user_id: 1
-    },
-    {
-      id: 2,
-      name: 'Physics Lab Report',
-      description: 'Analyze pendulum motion experiment data',
-      course_id: 2,
-      course_name: 'Physics',
-      due_date: '2024-11-18',
-      status: 'active',
-      progress: 30,
-      user_id: 1
-    }
-  ];
-  res.json(mockProjects);
+  const userProjects = projects
+    .filter(p => p.user_id === req.userId)
+    .map(project => {
+      const course = courses.find(c => c.id === project.course_id);
+      return {
+        ...project,
+        course_name: course ? course.name : null
+      };
+    })
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  
+  res.json(userProjects);
 });
 
 app.post('/api/projects', authMiddleware, (req, res) => {
@@ -217,60 +221,110 @@ app.post('/api/projects', authMiddleware, (req, res) => {
   }
 
   const newProject = {
-    id: projects.length + 1,
+    id: nextProjectId++,
     name,
-    description,
-    course_id,
-    due_date,
+    description: description || '',
+    course_id: course_id || null,
+    due_date: due_date || null,
     status: status || 'active',
     progress: 0,
     user_id: req.userId,
     created_at: new Date().toISOString()
   };
 
+  const course = courses.find(c => c.id === newProject.course_id);
+  const projectWithCourse = {
+    ...newProject,
+    course_name: course ? course.name : null
+  };
+
   projects.push(newProject);
-  res.status(201).json(newProject);
+  res.status(201).json(projectWithCourse);
+});
+
+app.put('/api/projects/:id', authMiddleware, (req, res) => {
+  const projectId = parseInt(req.params.id);
+  const projectIndex = projects.findIndex(p => p.id === projectId && p.user_id === req.userId);
+  
+  if (projectIndex === -1) {
+    return res.status(404).json({ error: 'Project not found' });
+  }
+
+  const { name, description, course_id, due_date, status, progress } = req.body;
+  
+  projects[projectIndex] = {
+    ...projects[projectIndex],
+    name: name || projects[projectIndex].name,
+    description: description !== undefined ? description : projects[projectIndex].description,
+    course_id: course_id !== undefined ? course_id : projects[projectIndex].course_id,
+    due_date: due_date !== undefined ? due_date : projects[projectIndex].due_date,
+    status: status || projects[projectIndex].status,
+    progress: progress !== undefined ? progress : projects[projectIndex].progress,
+    updated_at: new Date().toISOString()
+  };
+
+  const course = courses.find(c => c.id === projects[projectIndex].course_id);
+  const projectWithCourse = {
+    ...projects[projectIndex],
+    course_name: course ? course.name : null
+  };
+
+  res.json(projectWithCourse);
+});
+
+app.delete('/api/projects/:id', authMiddleware, (req, res) => {
+  const projectId = parseInt(req.params.id);
+  const projectIndex = projects.findIndex(p => p.id === projectId && p.user_id === req.userId);
+  
+  if (projectIndex === -1) {
+    return res.status(404).json({ error: 'Project not found' });
+  }
+
+  projects.splice(projectIndex, 1);
+  res.json({ message: 'Project deleted successfully' });
 });
 
 // Focus routes
 app.get('/api/focus/sessions', authMiddleware, (req, res) => {
-  const mockSessions = [
-    {
-      id: 1,
-      duration: 1800, // 30 minutes
-      course_id: 1,
-      course_name: 'Mathematics',
-      started_at: '2024-11-01T14:00:00Z',
-      ended_at: '2024-11-01T14:30:00Z',
-      user_id: 1
-    },
-    {
-      id: 2,
-      duration: 2700, // 45 minutes
-      course_id: 2,
-      course_name: 'Physics',
-      started_at: '2024-11-01T16:00:00Z',
-      ended_at: '2024-11-01T16:45:00Z',
-      user_id: 1
-    }
-  ];
-  res.json(mockSessions);
+  const { limit = 50 } = req.query;
+  
+  const userSessions = focus_sessions
+    .filter(s => s.user_id === req.userId)
+    .map(session => {
+      const course = courses.find(c => c.id === session.course_id);
+      return {
+        ...session,
+        course_name: course ? course.name : null
+      };
+    })
+    .sort((a, b) => new Date(b.started_at) - new Date(a.started_at))
+    .slice(0, parseInt(limit));
+  
+  res.json(userSessions);
 });
 
 app.post('/api/focus/start', authMiddleware, (req, res) => {
   const { course_id, duration } = req.body;
   
   const newSession = {
-    id: focus_sessions.length + 1,
-    course_id,
+    id: nextSessionId++,
+    course_id: course_id || null,
     duration: duration || 1800, // Default 30 minutes
     started_at: new Date().toISOString(),
+    ended_at: null,
     user_id: req.userId,
-    status: 'active'
+    status: 'active',
+    notes: null
+  };
+
+  const course = courses.find(c => c.id === newSession.course_id);
+  const sessionWithCourse = {
+    ...newSession,
+    course_name: course ? course.name : null
   };
 
   focus_sessions.push(newSession);
-  res.status(201).json(newSession);
+  res.status(201).json(sessionWithCourse);
 });
 
 app.post('/api/focus/:id/end', authMiddleware, (req, res) => {
@@ -300,11 +354,12 @@ app.post('/api/courses', authMiddleware, (req, res) => {
   }
 
   const newCourse = {
-    id: courses.length + 1,
+    id: nextCourseId++,
     name,
     code,
     color: color || '#6B7280',
-    user_id: req.userId
+    user_id: req.userId,
+    created_at: new Date().toISOString()
   };
 
   courses.push(newCourse);

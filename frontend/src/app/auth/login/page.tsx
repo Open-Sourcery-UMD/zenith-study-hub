@@ -33,7 +33,7 @@ export default function LoginPage() {
       toast.success('Welcome back!')
       router.push('/dashboard')
     } catch (error) {
-      toast.error('Invalid credentials')
+      toast.error('Invalid credentials, please try again')
     }
   }
 
