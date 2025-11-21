@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,9 +21,6 @@ import {
 
 export default function HomePage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
-
-  // Removed auto-redirect to allow viewing landing page even when authenticated
 
   const features = [
     {
