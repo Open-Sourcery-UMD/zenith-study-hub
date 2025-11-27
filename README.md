@@ -268,3 +268,4 @@ For questions or support, please open an issue on GitHub.
 Your Zenith Study Hub is ready for deployment. Follow the [DEPLOYMENT.md](DEPLOYMENT.md) guide to get it live!
 
 **Happy Studying! 📚✨**
+# zenith-study-hub1
