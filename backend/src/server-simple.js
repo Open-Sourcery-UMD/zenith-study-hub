@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const http = require('http');
 
 const app = express();
 
@@ -157,44 +156,6 @@ app.delete('/api/calendar/:id', authMiddleware, (req, res) => {
 
   calendar_events.splice(eventIndex, 1);
   res.json({ message: 'Event deleted successfully' });
-});
-
-// Error handling
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
-});
-
-// Function to find available port
-function findAvailablePort(startPort = 3333) {
-  return new Promise((resolve, reject) => {
-    const server = http.createServer();
-
-    server.listen(startPort, () => {
-      const port = server.address().port;
-      server.close(() => resolve(port));
-    });
-
-    server.on('error', (err) => {
-      if (err.code === 'EADDRINUSE') {
-        resolve(findAvailablePort(startPort + 1));
-      } else {
-        reject(err);
-      }
-    });
-  });
-}
-
-// Start server with available port
-findAvailablePort().then(port => {
-  app.listen(port, () => {
-    console.log(`🚀 Server running on port ${port}`);
-    console.log(`📱 Visit: http://localhost:${port}`);
-    console.log(`🔗 API Health: http://localhost:${port}/health`);
-    console.log(`📝 Update your frontend to use: http://localhost:${port}/api`);
-  });
-}).catch(err => {
-  console.error('Failed to start server:', err);
 });
 
 // Projects routes
@@ -424,42 +385,21 @@ app.post('/api/syllabus/create-events', authMiddleware, (req, res) => {
   res.status(201).json({ message: 'Events created successfully', events: createdEvents });
 });
 
-// Error handling
+// Error handling middleware (must be last)
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Function to find available port
-function findAvailablePort(startPort = 3333) {
-  return new Promise((resolve, reject) => {
-    const server = http.createServer();
-
-    server.listen(startPort, () => {
-      const port = server.address().port;
-      server.close(() => resolve(port));
-    });
-
-    server.on('error', (err) => {
-      if (err.code === 'EADDRINUSE') {
-        resolve(findAvailablePort(startPort + 1));
-      } else {
-        reject(err);
-      }
-    });
+// For local development
+if (require.main === module) {
+  const PORT = process.env.PORT || 3333;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📱 Visit: http://localhost:${PORT}`);
+    console.log(`🔗 API Health: http://localhost:${PORT}/health`);
   });
 }
 
-// Start server with available port
-findAvailablePort().then(port => {
-  app.listen(port, () => {
-    console.log(`🚀 Server running on port ${port}`);
-    console.log(`📱 Visit: http://localhost:${port}`);
-    console.log(`🔗 API Health: http://localhost:${port}/health`);
-    console.log(`📝 Update your frontend to use: http://localhost:${port}/api`);
-  });
-}).catch(err => {
-  console.error('Failed to start server:', err);
-});
-
+// Export for Vercel serverless
 module.exports = app;
